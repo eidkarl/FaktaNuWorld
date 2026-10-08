@@ -1,0 +1,14 @@
+{
+  "id": "venus-day",
+  "language": "sv",
+  "title": "En dag på Venus är längre än ett år! #Shorts",
+  "description": "Venus roterar ett varv på cirka 243 jorddygn och kretsar runt solen på cirka 225 jorddygn. Här betyder dag en rotation, inte en soldag. Källa: NASA Venus Facts. #FaktaNuWorld #Shorts",
+  "sources": ["https://science.nasa.gov/venus/facts/"],
+  "approved": false,
+  "scenes": [
+    {"text": "En dag på Venus är längre än ett år!", "seconds": 5},
+    {"text": "Ett varv runt solen tar cirka 225 jorddygn.", "seconds": 6},
+    {"text": "En rotation tar cirka 243 jorddygn.", "seconds": 6},
+    {"text": "Här menar vi rotation, inte soldag. Följ FaktaNuWorld!", "seconds": 7}
+  ]
+}

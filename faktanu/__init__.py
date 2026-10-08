@@ -1,0 +1,1 @@
+"""FaktaNuWorld daily Shorts pipeline."""
