@@ -85,7 +85,7 @@ class UploadTests(unittest.TestCase):
                     with self.assertRaises(FileExistsError):
                         upload(video)
                     calls = youtube.videos.return_value.insert.call_args
-                    self.assertEqual(calls.kwargs['body']['status']['privacyStatus'], 'public')
+                    self.assertEqual(calls.kwargs['body']['status']['privacyStatus'], 'private')
                     records = list(Path('state').glob('*.json'))
                     self.assertEqual(json.loads(records[0].read_text())['video_id'], 'test-id')
                     self.assertEqual(youtube.videos.return_value.insert.call_count, 1)

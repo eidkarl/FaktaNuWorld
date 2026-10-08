@@ -84,7 +84,7 @@ def file_hash(path):
     return digest.hexdigest()
 
 
-def upload(video, privacy='public'):
+def upload(video, privacy='private'):
     # Imports stay lazy so rendering and validation need no Google credentials.
     from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
@@ -154,7 +154,7 @@ def main():
     renderer.add_argument('--audio')
     uploader = commands.add_parser('upload')
     uploader.add_argument('video')
-    uploader.add_argument('--privacy', choices=['private', 'unlisted', 'public'], default='public')
+    uploader.add_argument('--privacy', choices=['private', 'unlisted', 'public'], default='private')
     commands.add_parser('authorize')
     args = parser.parse_args()
     if args.command == 'validate':
