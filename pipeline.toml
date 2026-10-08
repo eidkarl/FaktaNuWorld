@@ -1,0 +1,23 @@
+# Relative paths resolve against this file, not the shell working directory.
+[content]
+language = "sv"
+queue = ["content/example.json", "content/moon.json", "content/earth.json"]
+
+[tts]
+provider = "espeak-ng"
+voice = "sv"
+speed = 155
+
+[schedule]
+timezone = "Europe/Stockholm"
+# User-selected time; uploads are enabled only by an explicit --upload command.
+after = "09:00"
+
+[storage]
+output_dir = "output"
+state_dir = "state"
+
+[youtube]
+channel_id = "UCHZZmCjoEngwykhGSxDr5iQ"
+privacy = "private"
+# Set YOUTUBE_CHANNEL_ID and YOUTUBE_TOKEN_FILE securely in the runtime.

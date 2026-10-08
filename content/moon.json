@@ -1,0 +1,14 @@
+{
+  "id": "moon-same-face",
+  "language": "sv",
+  "title": "Varför ser vi samma sida av månen? #Shorts",
+  "description": "Månen roterar och kretsar runt jorden med ungefär samma period. Därför är ungefär samma sida vänd mot oss. Den bortre sidan är inte alltid mörk. Källa: NASA Moon Facts. #FaktaNuWorld #Shorts",
+  "sources": ["https://science.nasa.gov/moon/facts/"],
+  "approved": false,
+  "scenes": [
+    {"text": "Varför ser vi samma sida av månen?", "seconds": 5},
+    {"text": "Månen roterar faktiskt runt sin egen axel.", "seconds": 6},
+    {"text": "Rotationen och banan runt jorden tar ungefär lika lång tid.", "seconds": 8},
+    {"text": "Den bortre sidan är inte alltid mörk!", "seconds": 5}
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "earth-blue-planet",
+  "language": "sv",
+  "title": "Varför kallas jorden den blå planeten? #Shorts",
+  "description": "Vatten täcker ungefär 71 procent av jordens yta. Det betyder inte att 71 procent av jordens volym är vatten. Källa: NASA Earth Facts. #FaktaNuWorld #Shorts",
+  "sources": ["https://science.nasa.gov/earth/facts/"],
+  "approved": false,
+  "scenes": [
+    {"text": "Varför kallas jorden den blå planeten?", "seconds": 6},
+    {"text": "Vatten täcker ungefär 71 procent av jordens yta.", "seconds": 7},
+    {"text": "Det handlar om ytan, inte jordens volym!", "seconds": 6},
+    {"text": "Följ FaktaNuWorld för fler fakta.", "seconds": 5}
+  ]
+}

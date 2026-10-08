@@ -5,7 +5,7 @@ import tempfile
 import unittest
 import os
 from unittest.mock import Mock, patch
-from faktanu.pipeline import load_plan, render, upload, file_hash
+from faktanu.pipeline import load_plan, render, upload, file_hash, authenticated_youtube
 
 
 class PlanTests(unittest.TestCase):
@@ -91,6 +91,50 @@ class UploadTests(unittest.TestCase):
                     self.assertEqual(youtube.videos.return_value.insert.call_count, 1)
             finally:
                 os.chdir(old_cwd)
+
+
+class OAuthTests(unittest.TestCase):
+    def test_environment_credentials_refresh_without_a_file(self):
+        values = {'YOUTUBE_OAUTH_CLIENT_ID': 'example-client',
+                  'YOUTUBE_OAUTH_CLIENT_SECRET': 'test-placeholder-secret',
+                  'YOUTUBE_OAUTH_REFRESH_TOKEN': 'test-placeholder-refresh'}
+        credentials = Mock(valid=False, refresh_token='test-placeholder-refresh')
+        with patch.dict(os.environ, values), \
+             patch('google.oauth2.credentials.Credentials', return_value=credentials) as constructor, \
+             patch('googleapiclient.discovery.build') as build:
+            authenticated_youtube()
+            constructor.from_authorized_user_file.assert_not_called()
+            self.assertEqual(constructor.call_args.kwargs['token_uri'], 'https://oauth2.googleapis.com/token')
+            credentials.refresh.assert_called_once()
+            build.assert_called_once()
+
+    def test_refresh_values_go_to_google_token_endpoint_only(self):
+        from google.auth.transport.requests import Request
+        from urllib.parse import parse_qs
+        values = {'YOUTUBE_OAUTH_CLIENT_ID': 'example-client',
+                  'YOUTUBE_OAUTH_CLIENT_SECRET': 'synthetic-secret',
+                  'YOUTUBE_OAUTH_REFRESH_TOKEN': 'synthetic-refresh'}
+        response = Mock(status=200, data=json.dumps({
+            'access_token': 'synthetic-access', 'expires_in': 3600,
+            'token_type': 'Bearer'}).encode())
+        transport = Mock(return_value=response)
+        with patch.dict(os.environ, values), \
+             patch('google.auth.transport.requests.Request', return_value=transport), \
+             patch('googleapiclient.discovery.build') as build:
+            authenticated_youtube()
+            request = transport.call_args.kwargs
+            self.assertEqual(request['url'], 'https://oauth2.googleapis.com/token')
+            body = parse_qs(request['body'].decode())
+            self.assertEqual(body['client_secret'], ['synthetic-secret'])
+            self.assertEqual(body['refresh_token'], ['synthetic-refresh'])
+            self.assertEqual(build.call_args.kwargs['credentials'].token, 'synthetic-access')
+
+    def test_incomplete_environment_does_not_fall_back_to_another_account(self):
+        values = {'YOUTUBE_OAUTH_CLIENT_ID': 'example-client',
+                  'YOUTUBE_OAUTH_CLIENT_SECRET': '', 'YOUTUBE_OAUTH_REFRESH_TOKEN': ''}
+        with patch.dict(os.environ, values):
+            with self.assertRaisesRegex(ValueError, 'incomplete'):
+                authenticated_youtube()
 
 
 if __name__ == '__main__':
