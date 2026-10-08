@@ -207,6 +207,9 @@ def main():
     auth = commands.add_parser('authorize')
     auth.add_argument('--client-secrets', default='secrets/client_secret.json')
     auth.add_argument('--token-file', default='secrets/token.json')
+    connector = commands.add_parser('connect')
+    connector.add_argument('--client-secrets', default='secrets/client_secret.json')
+    connector.add_argument('--config', default='pipeline.toml')
     speech = commands.add_parser('narrate')
     speech.add_argument('plan')
     speech.add_argument('--output', default='output/narration.wav')
@@ -230,6 +233,9 @@ def main():
         print(render(args.plan, args.output, args.audio))
     elif args.command == 'upload':
         upload(args.video, args.privacy)
+    elif args.command == 'connect':
+        from .connect import connect
+        connect(args.client_secrets, args.config)
     elif args.command == 'narrate':
         from .narration import narrate
         print(narrate(args.plan, args.output))

@@ -1,19 +1,50 @@
 # Google OAuth와 FaktaNuWorld 채널 연결
 
-## 사용자가 한 번 수행할 설정
+## 첫 연결: 사용자 PC에서 실행
 
-1. Google Cloud Console에서 프로젝트를 만들거나 선택하고 YouTube Data API v3를 활성화합니다.
-2. OAuth 동의 화면을 설정합니다. 테스트 모드라면 `sweklaus@gmail.com`을 테스트 사용자로 등록합니다.
-3. OAuth 클라이언트 유형은 **Desktop app**으로 만듭니다. 다운로드한 JSON을 사용자 PC의 프로젝트 내 `secrets/client_secret.json`에 저장합니다.
-4. 사용자 PC에서 이 저장소를 받아 Python 가상환경과 `requirements.lock` 의존성을 설치합니다.
-5. 아래 인증 명령으로 브라우저에 로그인합니다. `sweklaus@gmail.com`에 연결된 실제 **FaktaNuWorld 채널**을 선택합니다. 브랜드 채널이 있으면 선택 결과를 확인합니다.
+Google 계정 로그인·동의와 Google Cloud OAuth 클라이언트의 최초 생성은 사용자가 직접 합니다.
+그 뒤의 의존성 설치, 로그인 창 열기, 채널 확인, 인증 파일 저장은 도우미가 처리합니다.
+PC에는 Python 3.12 이상이 필요하며 인증 연결만 할 때는 FFmpeg나 TTS를 설치할 필요가 없습니다.
+
+1. [Google Cloud Console](https://console.cloud.google.com/)에서 프로젝트를 선택하거나 만듭니다.
+2. [YouTube Data API v3](https://console.cloud.google.com/apis/library/youtube.googleapis.com)를 활성화합니다.
+3. [Google Auth Platform](https://console.cloud.google.com/auth/overview)에서 앱 정보와 동의 화면을 설정합니다.
+   외부 앱 테스트 모드라면 Audience의 테스트 사용자에 `sweklaus@gmail.com`을 추가합니다.
+4. [Clients](https://console.cloud.google.com/auth/clients)에서 OAuth 클라이언트를 생성합니다.
+   유형은 **Desktop app / 데스크톱 앱**입니다. JSON 파일을 사용자 PC에 다운로드합니다.
+5. GitHub의 최신 `main`을 사용자 PC에 내려받고 프로젝트 폴더에서 아래 명령을 실행합니다.
 
 ```sh
-python -m faktanu.pipeline authorize --client-secrets secrets/client_secret.json --token-file secrets/token.json
+python scripts/connect_youtube.py
 ```
 
-이 명령은 사용자 PC에서만 브라우저와 로컬 콜백을 사용합니다. 클라우드 localhost 주소를 공개 링크로 사용하지 않습니다.
-권한은 YouTube 업로드와 채널 조회입니다. OAuth 인증을 자동으로 대신할 수 없으며 비밀번호는 필요하지 않습니다.
+Windows에서 `python`이 없다면 `py -3 scripts/connect_youtube.py`를 사용할 수 있습니다.
+도우미가 다운로드한 JSON 파일 경로를 물어봅니다. 또는 다음처럼 지정합니다.
+
+```sh
+python scripts/connect_youtube.py --client-secrets "/다운로드/폴더/client_secret.json"
+```
+
+도우미는 `.venv`를 준비하고 고정된 의존성을 설치한 뒤 브라우저를 엽니다.
+`sweklaus@gmail.com`으로 로그인하여 YouTube 업로드와 채널 조회 권한에 동의하세요.
+브랜드 채널이 있으면 **FaktaNuWorld** 채널을 선택합니다. 이메일 힌트만으로 계정 소유를 검증하지 않으며,
+실제 인증 결과의 채널 ID가 `UCHZZmCjoEngwykhGSxDr5iQ`인지 API로 확인합니다.
+로그인 제한 시간은 5분이며, 중단하거나 다른 채널을 선택하면 다시 실행할 수 있습니다.
+이 과정은 업로드를 수행하거나 일일 워커를 시작하지 않습니다.
+
+성공하면 다음 파일을 자동 저장합니다.
+
+- `secrets/token.json`: 사용자 PC/운영 호스트의 파일 인증용 OAuth 토큰
+- `secrets/cloud-settings.json`: 클라우드 환경에 입력할 변수·비밀값 항목
+
+파일의 내용은 화면에 출력하지 않습니다. POSIX 시스템에서는 0600 권한으로 원자적으로 저장합니다.
+잘못된 채널 선택이나 불완전한 인증 결과는 기존 파일을 덮어쓰지 않습니다.
+자기 PC에서 `cloud-settings.json`을 열어 아래 표에 따라 환경 설정에 값을 입력하세요.
+파일이나 값을 채팅에 붙여 넣지 마세요. Google 비밀번호 입력은 Google 로그인 화면에서만 합니다.
+
+가상환경이 이미 준비돼 있다면 `python -m faktanu.pipeline connect`를 직접 사용할 수도 있습니다.
+기존 저수준 `authorize` 명령은 유지하지만 채널 검증이 포함된 `connect`를 권장합니다.
+클라우드 localhost 주소를 공개 링크로 쓰지 않고, 도우미는 브라우저가 있는 사용자 PC에서 실행합니다.
 
 ## 채널 ID 확인
 
@@ -37,7 +68,8 @@ python -m faktanu.pipeline doctor --youtube
 현재 채널 설정은 사용자가 제공한 `UCHZZmCjoEngwykhGSxDr5iQ`입니다.
 OAuth로 해당 채널 접근을 검증하기 전에는 실제 채널 연결이 완료된 것이 아닙니다.
 
-위의 사용자 PC 인증으로 생성된 token.json을 본인 PC에서 확인하고, 다음 항목을 환경 설정에 입력합니다.
+도우미가 만든 `secrets/cloud-settings.json`을 본인 PC에서 열고, 다음 항목을 환경 설정에 입력합니다.
+`environment_variables`의 값은 환경 변수, `secrets`의 값은 비밀값 항목입니다.
 파일이나 값을 채팅으로 보내지 마세요.
 
 | 환경 항목 | 사용자 PC의 token.json 항목 | 입력 위치 |

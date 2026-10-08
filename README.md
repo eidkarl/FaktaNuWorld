@@ -52,7 +52,10 @@ bash scripts/bootstrap_tts.sh
 
 ## YouTube 연결과 매일 실행
 
-[Google OAuth 설정 안내](docs/youtube-setup.md)를 따라 사용자 PC에서 인증하고 실제 FaktaNuWorld 채널 ID를 확인하세요.
+[Google OAuth 설정 안내](docs/youtube-setup.md)에 따라 Google Cloud의 Desktop app 클라이언트 JSON을 한 번 다운로드한 뒤,
+사용자 PC에서 `python scripts/connect_youtube.py`를 실행하세요. 의존성 준비, 로그인 창 열기,
+채널 ID 검증, 인증 파일과 클라우드 입력 항목 파일 저장을 자동으로 처리합니다.
+계정 로그인과 권한 동의는 Google 브라우저 화면에서 직접 진행합니다.
 채널 ID는 `UCHZZmCjoEngwykhGSxDr5iQ`로 설정했습니다. 실제 계정 연결은 OAuth 이후 검증해야 합니다.
 클라우드 환경에서는 OAuth의 client ID, client secret, refresh token을 안전한 환경 설정으로 제공할 수 있습니다.
 파일 방식은 `secrets/` 또는 안전한 런타임 파일 저장소를 사용합니다.
